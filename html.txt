@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" data-color-scheme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STEM Siksha</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Chart.js (required for progress chart) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<!-- ================= SPLASH SCREEN ================= -->
+<div id="splash-screen" class="splash-screen">
+  <div class="splash-content">
+    <div class="logo-animation">
+      <div class="logo-icon">🚀</div>
+      <h1 class="logo-title">STEM Siksha</h1>
+    </div>
+    <div class="loading-spinner"></div>
+  </div>
+</div>
+
+<!-- ================= ONBOARDING ================= -->
+<section id="onboarding-screen" class="full-screen-section hidden">
+  <div class="onboarding-content">
+    <div class="onboarding-header">
+      <h1>Welcome to STEM Siksha</h1>
+      <p>Your personalised STEM learning journey</p>
+    </div>
+
+    <div class="onboarding-form">
+      <div class="form-group">
+        <label class="form-label">Your Name</label>
+        <input id="student-name-mobile" class="form-control" placeholder="Enter your name" />
+        <div class="form-hint">Eg: Rahul, Priya</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Grade</label>
+        <select id="student-grade-mobile" class="form-control">
+          <option value="">Select Grade</option>
+          <option value="6">Class 6</option>
+          <option value="9">Class 9</option>
+          <option value="12">Class 12</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Preferred Language</label>
+        <select id="preferred-language-mobile" class="form-control">
+          <option value="en">English</option>
+          <option value="hi">Hindi</option>
+        </select>
+      </div>
+
+      <button class="btn btn--primary btn--full-width" onclick="completeOnboarding()">
+        Start Learning 🚀
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MAIN APP ================= -->
+<div id="app-container" class="app-container hidden">
+
+  <!-- ========== HOME TAB ========== -->
+  <section id="home-tab" class="tab-content active">
+
+    <div class="mobile-header">
+      <div class="header-top">
+        <h2 class="welcome-text">Hi, <span id="user-name"></span> 👋</h2>
+        <div class="streak-info">
+          <span class="streak-flame">🔥</span>
+          <span id="streak-count">0</span>
+        </div>
+      </div>
+
+      <div class="quick-stats">
+        <div class="stat-item">
+          <div class="stat-value" id="current-xp">0</div>
+          <div class="stat-label">XP</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="user-level">1</div>
+          <div class="stat-label">Level</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="badge-count">0</div>
+          <div class="stat-label">Badges</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Goals -->
+    <div class="daily-goals">
+      <h3>Daily Goals</h3>
+      <div id="daily-goals-list" class="goals-list"></div>
+    </div>
+
+    <!-- Subject Overview -->
+    <div class="subject-overview">
+      <h3>Subjects</h3>
+      <div class="subject-cards-mobile">
+
+        <div class="subject-card-mini" data-subject="Mathematics">
+          <div class="subject-icon">📐</div>
+          <div class="subject-info">
+            <div class="subject-name">Math</div>
+            <div class="progress-ring">
+              <div id="math-progress-circle" class="progress-circle">
+                <span id="math-progress-percent">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="subject-card-mini" data-subject="Physics">
+          <div class="subject-icon">⚡</div>
+          <div class="subject-info">
+            <div class="subject-name">Physics</div>
+            <div class="progress-ring">
+              <div id="physics-progress-circle" class="progress-circle">
+                <span id="physics-progress-percent">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="subject-card-mini" data-subject="Chemistry">
+          <div class="subject-icon">🧪</div>
+          <div class="subject-info">
+            <div class="subject-name">Chemistry</div>
+            <div class="progress-ring">
+              <div id="chemistry-progress-circle" class="progress-circle">
+                <span id="chemistry-progress-percent">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="subject-card-mini" data-subject="Biology">
+          <div class="subject-icon">🧬</div>
+          <div class="subject-info">
+            <div class="subject-name">Biology</div>
+            <div class="progress-ring">
+              <div id="biology-progress-circle" class="progress-circle">
+                <span id="biology-progress-percent">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SUBJECTS TAB ========== -->
+  <section id="subjects-tab" class="tab-content">
+
+    <div class="content-toggle">
+      <button class="toggle-btn active" data-type="questions">Questions</button>
+      <button class="toggle-btn" data-type="labs">Labs</button>
+    </div>
+
+    <!-- Questions -->
+    <div id="questions-content" class="content-section active subjects-grid">
+      <div class="subject-card-full" data-subject="Mathematics">
+        <div class="card-header">
+          <div class="subject-icon">📐</div>
+          <div class="subject-title">
+            <h3>Mathematics</h3>
+            <p>Practice problems</p>
+          </div>
+        </div>
+        <div class="progress-bar-mobile">
+          <div class="progress-fill"></div>
+        </div>
+        <button class="start-btn" onclick="startSubject('Mathematics','questions')">Start</button>
+      </div>
+
+      <div class="subject-card-full" data-subject="Physics">
+        <div class="card-header">
+          <div class="subject-icon">⚡</div>
+          <div class="subject-title">
+            <h3>Physics</h3>
+            <p>Conceptual learning</p>
+          </div>
+        </div>
+        <button class="start-btn" onclick="startSubject('Physics','questions')">Start</button>
+      </div>
+    </div>
+
+    <!-- Labs -->
+    <div id="labs-content" class="content-section lab-list">
+      <div class="lab-item" onclick="startLab('pendulum')">
+        <div class="lab-icon">⚖️</div>
+        <div class="lab-name">Simple Pendulum</div>
+        <div class="lab-arrow">›</div>
+      </div>
+
+      <div class="lab-item" onclick="startLab('circuit')">
+        <div class="lab-icon">⚡</div>
+        <div class="lab-name">Ohm’s Law Circuit</div>
+        <div class="lab-arrow">›</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PROGRESS TAB ========== -->
+  <section id="progress-tab" class="tab-content">
+    <div class="analytics-overview">
+
+      <div class="level-progress-card">
+        <div class="level-info">
+          <h3>Level <span id="progress-level">1</span></h3>
+          <p id="level-title-progress">Curious Beginner</p>
+        </div>
+
+        <div class="circular-progress">
+          <svg width="80" height="80">
+            <circle cx="40" cy="40" r="36" stroke="#eee" stroke-width="6" fill="none"/>
+            <circle id="progress-circle" cx="40" cy="40" r="36"
+              stroke="var(--color-primary)" stroke-width="6" fill="none"
+              stroke-dasharray="226" stroke-dashoffset="226"/>
+          </svg>
+          <div class="progress-text">
+            <span id="progress-xp-text">0/500</span>
+            <small>XP</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-section">
+        <h3>Weekly XP</h3>
+        <canvas id="progress-chart" height="180"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== ACHIEVEMENTS TAB ========== -->
+  <section id="achievements-tab" class="tab-content">
+    <div class="achievement-summary">
+      <span id="earned-badges">0</span> / <span id="total-badges">0</span> badges earned
+    </div>
+    <div id="mobile-badges-grid" class="badges-grid"></div>
+  </section>
+
+  <!-- ========== PROFILE TAB ========== -->
+  <section id="profile-tab" class="tab-content">
+    <div class="profile-content">
+
+      <div class="profile-info-card">
+        <div class="profile-avatar">
+          <div class="avatar-circle" id="avatar-initial">A</div>
+        </div>
+        <div class="profile-details">
+          <h3 id="profile-name"></h3>
+          <p>Grade: <span id="profile-grade"></span></p>
+          <p>Level: <span id="profile-level-display"></span></p>
+          <p>XP: <span id="profile-xp"></span></p>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="btn btn--outline" onclick="showHelp()">Help</button>
+        <button class="btn btn--outline" onclick="resetProgress()">Reset Progress</button>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<!-- ================= QUESTION SCREEN ================= -->
+<section id="question-screen" class="full-screen-section hidden">
+  <div class="question-header">
+    <button class="back-btn" onclick="goBackToSubjects()">←</button>
+    <div class="question-progress" id="question-counter">1/1</div>
+    <div class="question-xp">+<span id="question-xp-value">0</span> XP</div>
+  </div>
+
+  <div class="question-content">
+    <div id="question-text" class="question-text"></div>
+    <div id="answer-section" class="answer-section"></div>
+
+    <div class="question-tools">
+      <button class="tool-btn" onclick="showHint()">Hint</button>
+      <button class="tool-btn" onclick="showSteps()">Steps</button>
+    </div>
+  </div>
+
+  <div id="question-feedback" class="question-feedback"></div>
+</section>
+
+<!-- ================= LAB SCREEN ================= -->
+<section id="lab-screen" class="full-screen-section hidden">
+  <div class="lab-header">
+    <button class="back-btn" onclick="goBackToLabs()">←</button>
+    <h2 id="lab-title"></h2>
+  </div>
+
+  <div class="lab-workspace">
+    <div id="simulation-area" class="simulation-area"></div>
+    <div id="controls-panel" class="controls-panel"></div>
+    <div id="lab-assessment"></div>
+  </div>
+</section>
+
+<!-- ================= MODAL ================= -->
+<div id="success-modal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-animation">🎉</div>
+    <h3 id="modal-title"></h3>
+    <p id="modal-message"></p>
+    <div id="modal-xp-gain" class="xp-gain-animation hidden">
+      +<span id="modal-xp-amount">0</span> XP
+    </div>
+    <button class="btn btn--primary btn--full-width" onclick="closeModal()">Continue</button>
+  </div>
+</div>
+
+<!-- ================= TOAST ================= -->
+<div id="notification-toast" class="toast hidden">
+  <div id="toast-message" class="toast-message"></div>
+</div>
+
+<!-- ================= BOTTOM NAV ================= -->
+<nav id="bottom-nav" class="bottom-nav hidden">
+  <button class="nav-tab active" data-tab="home">
+    <div class="nav-icon">🏠</div>
+    <div class="nav-label">Home</div>
+  </button>
+
+  <button class="nav-tab" data-tab="subjects">
+    <div class="nav-icon">📚</div>
+    <div class="nav-label">Subjects</div>
+  </button>
+
+  <button class="nav-tab" data-tab="progress">
+    <div class="nav-icon">📈</div>
+    <div class="nav-label">Progress</div>
+  </button>
+
+  <button class="nav-tab" data-tab="achievements">
+    <div class="nav-icon">🏆</div>
+    <div class="nav-label">Badges</div>
+    <div id="achievements-badge" class="nav-badge" style="display:none">!</div>
+  </button>
+
+  <button class="nav-tab" data-tab="profile">
+    <div class="nav-icon">👤</div>
+    <div class="nav-label">Profile</div>
+  </button>
+</nav>
+
+<!-- JS -->
+<script src="app.js"></script>
+</body>
+</html>

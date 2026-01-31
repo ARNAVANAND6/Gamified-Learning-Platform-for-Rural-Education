@@ -1,0 +1,1750 @@
+// STEM Siksha Mobile App - Enhanced Learning Platform
+class STEMMobileApp {
+    constructor() {
+        this.currentTab = 'home';
+        this.currentSubject = '';
+        this.currentContentType = 'questions';
+        this.currentQuestion = null;
+        this.currentLab = null;
+        this.questionIndex = 0;
+        this.currentLanguage = 'en';
+        
+        // User data structure
+        this.userData = {
+            name: '',
+            grade: '',
+            language: 'en',
+            xp: 0,
+            level: 1,
+            badges: [],
+            streak: 0,
+            totalStudyTime: 0,
+            problemsSolved: 0,
+            accuracyRate: 85,
+            subjects: {
+                mathematics: { completed: 0, total: 10, progress: 0 },
+                physics: { completed: 0, total: 10, progress: 0 },
+                chemistry: { completed: 0, total: 10, progress: 0 },
+                biology: { completed: 0, total: 10, progress: 0 }
+            },
+            completedQuestions: [],
+            completedLabs: [],
+            dailyGoals: [],
+            lastLoginDate: null
+        };
+
+        // Questions database for different subjects and grades
+        this.questionsData = {
+            6: {
+                Mathematics: [
+                    {
+                        question: "What is 15 × 8?",
+                        type: "input",
+                        answer: "120",
+                        hint: "Break it down: 15 × 8 = (10 × 8) + (5 × 8)",
+                        explanation: "15 × 8 = 120. You can solve this by breaking 15 into 10 + 5, then (10 × 8) + (5 × 8) = 80 + 40 = 120",
+                        xp: 15,
+                        difficulty: "easy"
+                    },
+                    {
+                        question: "Arrange in ascending order: 245, 198, 301, 156",
+                        type: "multiple_choice",
+                        options: ["156, 198, 245, 301", "198, 156, 245, 301", "156, 245, 198, 301", "301, 245, 198, 156"],
+                        answer: "156, 198, 245, 301",
+                        hint: "Compare the hundreds place first",
+                        explanation: "When arranging in ascending order, compare digits from left to right. 156 < 198 < 245 < 301",
+                        xp: 10,
+                        difficulty: "easy"
+                    },
+                    {
+                        question: "What is the place value of 7 in 4,752?",
+                        type: "multiple_choice",
+                        options: ["7", "70", "700", "7000"],
+                        answer: "700",
+                        hint: "Look at which position the 7 is in",
+                        explanation: "7 is in the hundreds place, so its place value is 700",
+                        xp: 10,
+                        difficulty: "easy"
+                    }
+                ],
+                Physics: [
+                    {
+                        question: "What happens when light hits an opaque object?",
+                        type: "multiple_choice",
+                        options: ["Light passes through", "Shadow is formed", "Light bends", "Light changes color"],
+                        answer: "Shadow is formed",
+                        hint: "Opaque objects don't let light pass through",
+                        explanation: "When light hits an opaque object, it cannot pass through, creating a shadow behind the object",
+                        xp: 10,
+                        difficulty: "easy"
+                    },
+                    {
+                        question: "Which is faster: light or sound?",
+                        type: "multiple_choice",
+                        options: ["Light", "Sound", "Both same", "Depends on medium"],
+                        answer: "Light",
+                        hint: "Think about lightning and thunder",
+                        explanation: "Light travels much faster than sound. That's why we see lightning before hearing thunder",
+                        xp: 10,
+                        difficulty: "easy"
+                    }
+                ]
+            },
+            9: {
+                Mathematics: [
+                    {
+                        question: "Solve: 3x + 7 = 22",
+                        type: "input",
+                        answer: "5",
+                        hint: "Subtract 7 from both sides, then divide by 3",
+                        explanation: "3x + 7 = 22 → 3x = 15 → x = 5",
+                        xp: 20,
+                        difficulty: "medium"
+                    },
+                    {
+                        question: "Find the distance between points A(1,2) and B(4,6)",
+                        type: "input",
+                        answer: "5",
+                        hint: "Use the distance formula: √[(x₂-x₁)² + (y₂-y₁)²]",
+                        explanation: "d = √[(4-1)² + (6-2)²] = √[9 + 16] = √25 = 5",
+                        xp: 30,
+                        difficulty: "medium"
+                    },
+                    {
+                        question: "What is the value of π (pi) approximately?",
+                        type: "multiple_choice",
+                        options: ["3.14", "2.71", "1.41", "2.14"],
+                        answer: "3.14",
+                        hint: "It's the ratio of circumference to diameter",
+                        explanation: "π ≈ 3.14159..., commonly approximated as 3.14",
+                        xp: 15,
+                        difficulty: "easy"
+                    }
+                ],
+                Physics: [
+                    {
+                        question: "A car travels 100m in 10 seconds. Calculate its speed in m/s.",
+                        type: "input",
+                        answer: "10",
+                        hint: "Speed = Distance ÷ Time",
+                        explanation: "Speed = 100m ÷ 10s = 10 m/s",
+                        xp: 25,
+                        difficulty: "medium"
+                    },
+                    {
+                        question: "What is Newton's First Law of Motion?",
+                        type: "multiple_choice",
+                        options: ["F = ma", "Object at rest stays at rest unless acted upon by force", "Action = Reaction", "E = mc²"],
+                        answer: "Object at rest stays at rest unless acted upon by force",
+                        hint: "It's about inertia",
+                        explanation: "Newton's First Law states that an object at rest stays at rest and an object in motion stays in motion unless acted upon by an external force",
+                        xp: 20,
+                        difficulty: "medium"
+                    }
+                ],
+                Chemistry: [
+                    {
+                        question: "How many protons does Carbon have?",
+                        type: "input",
+                        answer: "6",
+                        hint: "Check the atomic number of Carbon",
+                        explanation: "Carbon has atomic number 6, so it has 6 protons",
+                        xp: 15,
+                        difficulty: "easy"
+                    },
+                    {
+                        question: "What is the chemical symbol for water?",
+                        type: "multiple_choice",
+                        options: ["H2O", "CO2", "NaCl", "O2"],
+                        answer: "H2O",
+                        hint: "It contains hydrogen and oxygen",
+                        explanation: "Water is H2O - two hydrogen atoms bonded to one oxygen atom",
+                        xp: 10,
+                        difficulty: "easy"
+                    }
+                ],
+                Biology: [
+                    {
+                        question: "Which part of the plant makes food?",
+                        type: "multiple_choice",
+                        options: ["Roots", "Stem", "Leaves", "Flowers"],
+                        answer: "Leaves",
+                        hint: "This process is called photosynthesis",
+                        explanation: "Leaves contain chlorophyll which helps in photosynthesis to make food for the plant",
+                        xp: 10,
+                        difficulty: "easy"
+                    },
+                    {
+                        question: "What is the powerhouse of the cell?",
+                        type: "multiple_choice",
+                        options: ["Nucleus", "Mitochondria", "Ribosome", "Vacuole"],
+                        answer: "Mitochondria",
+                        hint: "It produces energy for the cell",
+                        explanation: "Mitochondria are called the powerhouse of the cell because they produce ATP (energy)",
+                        xp: 15,
+                        difficulty: "medium"
+                    }
+                ]
+            },
+            12: {
+                Physics: [
+                    {
+                        question: "Calculate force between two charges of +2μC and -3μC separated by 0.1m",
+                        type: "input",
+                        answer: "5.4",
+                        hint: "Use Coulomb's law: F = k|q₁q₂|/r²",
+                        explanation: "F = (9×10⁹)(2×10⁻⁶)(3×10⁻⁶)/(0.1)² = 5.4 N",
+                        xp: 50,
+                        difficulty: "hard"
+                    }
+                ],
+                Chemistry: [
+                    {
+                        question: "What is the pH of a neutral solution?",
+                        type: "input",
+                        answer: "7",
+                        hint: "Neutral means equal H⁺ and OH⁻ ions",
+                        explanation: "A neutral solution has pH = 7, where [H⁺] = [OH⁻] = 10⁻⁷ M",
+                        xp: 20,
+                        difficulty: "medium"
+                    }
+                ]
+            }
+        };
+
+        // Virtual labs data
+        this.labsData = {
+            pendulum: {
+                name: "Simple Pendulum",
+                subject: "Physics",
+                description: "Study oscillatory motion and time period",
+                icon: "⚖️",
+                assessmentQuestions: [
+                    {
+                        question: "What happens to the time period when you increase the length of the pendulum?",
+                        type: "multiple_choice",
+                        options: ["Increases", "Decreases", "Stays the same", "Doubles"],
+                        answer: "Increases",
+                        xp: 30
+                    }
+                ]
+            },
+            circuit: {
+                name: "Ohm's Law Circuit",
+                subject: "Physics", 
+                description: "Explore voltage, current, and resistance relationships",
+                icon: "⚡",
+                assessmentQuestions: [
+                    {
+                        question: "If voltage doubles and resistance stays same, what happens to current?",
+                        type: "multiple_choice",
+                        options: ["Doubles", "Halves", "Stays same", "Quadruples"],
+                        answer: "Doubles",
+                        xp: 30
+                    }
+                ]
+            },
+            titration: {
+                name: "pH Titration",
+                subject: "Chemistry",
+                description: "Learn neutralization reactions",
+                icon: "🧪",
+                assessmentQuestions: [
+                    {
+                        question: "At the equivalence point, what is the relationship between acid and base?",
+                        type: "multiple_choice", 
+                        options: ["Equal moles", "Equal volumes", "Equal concentrations", "Equal masses"],
+                        answer: "Equal moles",
+                        xp: 30
+                    }
+                ]
+            },
+            atomic: {
+                name: "Atomic Structure Builder",
+                subject: "Chemistry",
+                description: "Build atoms and understand structure",
+                icon: "⚛️",
+                assessmentQuestions: [
+                    {
+                        question: "Where are electrons located in an atom?",
+                        type: "multiple_choice",
+                        options: ["Nucleus", "Electron shells", "Proton cloud", "Center"],
+                        answer: "Electron shells",
+                        xp: 25
+                    }
+                ]
+            },
+            dna: {
+                name: "DNA Replication",
+                subject: "Biology",
+                description: "Watch DNA replicate step by step",
+                icon: "🧬",
+                assessmentQuestions: [
+                    {
+                        question: "DNA replication is described as:",
+                        type: "multiple_choice",
+                        options: ["Conservative", "Semi-conservative", "Dispersive", "Random"],
+                        answer: "Semi-conservative",
+                        xp: 35
+                    }
+                ]
+            },
+            heart: {
+                name: "Heart Circulation",
+                subject: "Biology",
+                description: "Study cardiac cycle and blood flow",
+                icon: "❤️",
+                assessmentQuestions: [
+                    {
+                        question: "Which chamber pumps blood to the body?",
+                        type: "multiple_choice",
+                        options: ["Right atrium", "Left atrium", "Right ventricle", "Left ventricle"],
+                        answer: "Left ventricle",
+                        xp: 25
+                    }
+                ]
+            },
+            grapher: {
+                name: "Graphing Calculator",
+                subject: "Mathematics",
+                description: "Plot mathematical functions",
+                icon: "📈",
+                assessmentQuestions: [
+                    {
+                        question: "What is the slope of the line y = 2x + 3?",
+                        type: "input",
+                        answer: "2",
+                        xp: 20
+                    }
+                ]
+            },
+            geometry: {
+                name: "Geometry Constructor",
+                subject: "Mathematics", 
+                description: "Interactive geometric constructions",
+                icon: "📐",
+                assessmentQuestions: [
+                    {
+                        question: "Sum of angles in a triangle is:",
+                        type: "input",
+                        answer: "180",
+                        xp: 15
+                    }
+                ]
+            }
+        };
+
+        // Achievements system
+        this.badges = [
+            { 
+                name: "First Steps", 
+                description: "Complete your first question", 
+                icon: "🎯", 
+                condition: "solve_1_problem", 
+                earned: false, 
+                xp: 100 
+            },
+            { 
+                name: "Problem Solver", 
+                description: "Solve 10 problems", 
+                icon: "🧩", 
+                condition: "solve_10_problems", 
+                earned: false, 
+                xp: 200 
+            },
+            { 
+                name: "Lab Explorer", 
+                description: "Complete your first lab", 
+                icon: "🔬", 
+                condition: "complete_1_lab", 
+                earned: false, 
+                xp: 150 
+            },
+            { 
+                name: "Speed Learner", 
+                description: "Answer correctly in under 10 seconds", 
+                icon: "⚡", 
+                condition: "fast_answer", 
+                earned: false, 
+                xp: 75 
+            },
+            { 
+                name: "Perfectionist", 
+                description: "Get 5 questions right in a row", 
+                icon: "💯", 
+                condition: "perfect_streak", 
+                earned: false, 
+                xp: 250 
+            },
+            { 
+                name: "Daily Learner", 
+                description: "Complete daily goals", 
+                icon: "📅", 
+                condition: "daily_goals", 
+                earned: false, 
+                xp: 100 
+            },
+            { 
+                name: "Multi-Subject", 
+                description: "Solve problems in all subjects", 
+                icon: "🌟", 
+                condition: "all_subjects", 
+                earned: false, 
+                xp: 300 
+            },
+            { 
+                name: "STEM Master", 
+                description: "Reach Level 5", 
+                icon: "🏆", 
+                condition: "reach_level_5", 
+                earned: false, 
+                xp: 500 
+            }
+        ];
+
+        this.levelThresholds = [
+            { level: 1, title: "Curious Beginner", xp: 0 },
+            { level: 2, title: "Learning Explorer", xp: 500 },
+            { level: 3, title: "Knowledge Builder", xp: 1200 },
+            { level: 4, title: "Problem Solver", xp: 2000 },
+            { level: 5, title: "STEM Enthusiast", xp: 3000 },
+            { level: 6, title: "Lab Scientist", xp: 4500 },
+            { level: 7, title: "Theory Master", xp: 6500 },
+            { level: 8, title: "Innovation Seeker", xp: 9000 },
+            { level: 9, title: "Research Expert", xp: 12000 },
+            { level: 10, title: "STEM Master", xp: 15000 }
+        ];
+
+        this.init();
+    }
+
+    init() {
+        console.log('Initializing STEM Mobile App...');
+        
+        // Show splash screen first
+        this.showSplashScreen();
+        
+        // Initialize after splash
+        setTimeout(() => {
+            this.loadUserData();
+            this.setupEventListeners();
+            this.checkFirstTime();
+            this.setupTouchInteractions();
+            
+            // Hide splash and show app
+            this.hideSplashScreen();
+        }, 2500);
+    }
+
+    showSplashScreen() {
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+            splash.classList.add('active');
+        }
+    }
+
+    hideSplashScreen() {
+        const splash = document.getElementById('splash-screen');
+        const appContainer = document.getElementById('app-container');
+        const bottomNav = document.getElementById('bottom-nav');
+        
+        if (splash) {
+            splash.classList.remove('active');
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 300);
+        }
+        
+        if (appContainer) {
+            appContainer.classList.remove('hidden');
+        }
+        
+        if (bottomNav) {
+            bottomNav.classList.remove('hidden');
+        }
+    }
+
+    checkFirstTime() {
+        if (!this.userData.name || !this.userData.grade) {
+            this.showOnboarding();
+        } else {
+            this.initializeApp();
+        }
+    }
+
+    showOnboarding() {
+        this.showScreen('onboarding-screen');
+        const bottomNav = document.getElementById('bottom-nav');
+        if (bottomNav) {
+            bottomNav.classList.add('hidden');
+        }
+    }
+
+    setupEventListeners() {
+        // Bottom navigation
+        const navTabs = document.querySelectorAll('.nav-tab');
+        navTabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                const tabName = tab.dataset.tab;
+                this.switchTab(tabName);
+                this.addTouchFeedback(tab);
+            });
+        });
+
+        // Content toggle in subjects
+        const toggleBtns = document.querySelectorAll('.toggle-btn');
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.dataset.type;
+                this.switchContentType(type);
+            });
+        });
+
+        // Subject card interactions
+        const subjectCards = document.querySelectorAll('.subject-card-mini');
+        subjectCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const subject = card.dataset.subject;
+                this.switchTab('subjects');
+                this.highlightSubject(subject);
+            });
+        });
+
+        // Global functions
+        window.startSubject = (subject, type) => this.startSubject(subject, type);
+        window.startLab = (labKey) => this.startLab(labKey);
+        window.completeOnboarding = () => this.completeOnboarding();
+        window.goBackToSubjects = () => this.goBackToSubjects();
+        window.goBackToLabs = () => this.goBackToLabs();
+        window.showHint = () => this.showHint();
+        window.showSteps = () => this.showSteps();
+        window.showHelp = () => this.showHelp();
+        window.resetProgress = () => this.resetProgress();
+        window.closeModal = () => this.closeModal();
+    }
+
+    setupTouchInteractions() {
+        // Add touch feedback to buttons
+        const buttons = document.querySelectorAll('button, .subject-card-mini, .lab-item, .answer-option');
+        buttons.forEach(btn => {
+            btn.addEventListener('touchstart', () => {
+                this.addTouchFeedback(btn);
+            });
+        });
+
+        // Pull to refresh (simplified)
+        let startY = 0;
+        const homeTab = document.getElementById('home-tab');
+        
+        if (homeTab) {
+            homeTab.addEventListener('touchstart', (e) => {
+                startY = e.touches[0].clientY;
+            });
+
+            homeTab.addEventListener('touchmove', (e) => {
+                const currentY = e.touches[0].clientY;
+                const diff = currentY - startY;
+                
+                if (diff > 100 && homeTab.scrollTop === 0) {
+                    this.refreshData();
+                }
+            });
+        }
+    }
+
+    addTouchFeedback(element) {
+        element.classList.add('touch-feedback');
+        setTimeout(() => {
+            element.classList.remove('touch-feedback');
+        }, 200);
+    }
+
+    refreshData() {
+        this.showToast('Refreshing data...');
+        setTimeout(() => {
+            this.updateDashboard();
+            this.showToast('Data updated!');
+        }, 1000);
+    }
+
+    showToast(message) {
+        const toast = document.getElementById('notification-toast');
+        const toastMessage = document.getElementById('toast-message');
+        
+        if (toast && toastMessage) {
+            toastMessage.textContent = message;
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+    }
+
+    completeOnboarding() {
+        const nameInput = document.getElementById('student-name-mobile');
+        const gradeInput = document.getElementById('student-grade-mobile');
+        const languageInput = document.getElementById('preferred-language-mobile');
+
+        if (!nameInput || !gradeInput || !languageInput) return;
+
+        const name = nameInput.value.trim();
+        const grade = gradeInput.value;
+        const language = languageInput.value;
+
+        // Enhanced name validation
+        if (!this.isValidName(name)) {
+            this.showToast('Please enter a valid name (e.g., Rajesh, Priya, Amit)');
+            return;
+        }
+
+        if (!grade) {
+            this.showToast('Please select your grade');
+            return;
+        }
+
+        this.userData.name = name;
+        this.userData.grade = grade;
+        this.userData.language = language;
+        this.currentLanguage = language;
+
+        // Set initial avatar
+        const avatarInitial = document.getElementById('avatar-initial');
+        if (avatarInitial) {
+            avatarInitial.textContent = name.charAt(0).toUpperCase();
+        }
+
+        this.saveUserData();
+        this.initializeApp();
+        this.generateDailyGoals();
+        
+        // Show welcome modal
+        this.showModal('🎉 Welcome!', `Hi ${name}! Your learning journey begins now. Let's explore STEM together!`, 100);
+    }
+
+    isValidName(name) {
+        if (!name || name.length < 2) return false;
+        
+        // Check for gibberish patterns
+        const gibberishPatterns = [
+            /^[aeiou]+$/i,  // Only vowels
+            /^[bcdfghj-np-tv-z]+$/i,  // Only consonants
+            /(.)\1{3,}/,     // Repeated characters
+            /^(abc|xyz|qwe|asd|zxc|123)/i,  // Common gibberish
+            /[0-9]/,         // Contains numbers
+            /[^a-zA-Z\s]/    // Contains special characters
+        ];
+
+        // Check against gibberish patterns
+        for (let pattern of gibberishPatterns) {
+            if (pattern.test(name)) return false;
+        }
+
+        // Check if it's a real name pattern (has vowels and consonants)
+        const hasVowels = /[aeiou]/i.test(name);
+        const hasConsonants = /[bcdfghj-np-tv-z]/i.test(name);
+        
+        return hasVowels && hasConsonants;
+    }
+
+    initializeApp() {
+        this.hideScreen('onboarding-screen');
+        this.showScreen('app-container');
+        const bottomNav = document.getElementById('bottom-nav');
+        if (bottomNav) {
+            bottomNav.classList.remove('hidden');
+        }
+        
+        this.switchTab('home');
+        this.updateDashboard();
+        this.updateProfile();
+        this.loadAchievements();
+        this.updateProgress();
+    }
+
+    switchTab(tabName) {
+        console.log('Switching to tab:', tabName);
+        
+        // Update navigation
+        const navTabs = document.querySelectorAll('.nav-tab');
+        navTabs.forEach(tab => {
+            if (tab.dataset.tab === tabName) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+
+        // Show/hide content
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(content => {
+            content.classList.remove('active');
+        });
+
+        const targetTab = document.getElementById(`${tabName}-tab`);
+        if (targetTab) {
+            targetTab.classList.add('active');
+            this.currentTab = tabName;
+        }
+
+        // Load specific content
+        if (tabName === 'home') {
+            this.updateDashboard();
+        } else if (tabName === 'progress') {
+            this.updateProgress();
+        } else if (tabName === 'achievements') {
+            this.loadAchievements();
+        }
+    }
+
+    switchContentType(type) {
+        this.currentContentType = type;
+        
+        // Update toggle buttons
+        const toggleBtns = document.querySelectorAll('.toggle-btn');
+        toggleBtns.forEach(btn => {
+            if (btn.dataset.type === type) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        // Show/hide content
+        const questionsContent = document.getElementById('questions-content');
+        const labsContent = document.getElementById('labs-content');
+        
+        if (type === 'questions') {
+            if (questionsContent) questionsContent.classList.add('active');
+            if (labsContent) labsContent.classList.remove('active');
+        } else {
+            if (questionsContent) questionsContent.classList.remove('active');
+            if (labsContent) labsContent.classList.add('active');
+        }
+    }
+
+    updateDashboard() {
+        // Update basic info
+        const userName = document.getElementById('user-name');
+        const userLevel = document.getElementById('user-level');
+        const currentXP = document.getElementById('current-xp');
+        const badgeCount = document.getElementById('badge-count');
+        const streakCount = document.getElementById('streak-count');
+
+        if (userName) userName.textContent = this.userData.name;
+        if (userLevel) userLevel.textContent = this.userData.level;
+        if (currentXP) currentXP.textContent = this.userData.xp;
+        if (badgeCount) badgeCount.textContent = this.userData.badges.length;
+        if (streakCount) streakCount.textContent = this.userData.streak;
+
+        // Update subject progress circles
+        this.updateSubjectProgressCircles();
+        
+        // Generate and display daily goals
+        this.displayDailyGoals();
+    }
+
+    updateSubjectProgressCircles() {
+        const subjects = ['math', 'physics', 'chemistry', 'biology'];
+        
+        subjects.forEach(subject => {
+            const circle = document.getElementById(`${subject}-progress-circle`);
+            const percent = document.getElementById(`${subject}-progress-percent`);
+            
+            if (circle && percent) {
+                const subjectData = this.userData.subjects[subject === 'math' ? 'mathematics' : subject];
+                const progress = subjectData ? Math.round(subjectData.progress) : 0;
+                
+                // Update circular progress
+                const degrees = (progress / 100) * 360;
+                circle.style.background = `conic-gradient(var(--color-primary) ${degrees}deg, var(--color-secondary) ${degrees}deg)`;
+                percent.textContent = `${progress}%`;
+            }
+        });
+    }
+
+    generateDailyGoals() {
+        this.userData.dailyGoals = [
+            { 
+                text: "Solve 3 practice questions", 
+                completed: false, 
+                xp: 50,
+                progress: 0,
+                target: 3
+            },
+            { 
+                text: "Complete 1 lab simulation", 
+                completed: false, 
+                xp: 75,
+                progress: 0,
+                target: 1
+            },
+            { 
+                text: "Achieve 90% accuracy", 
+                completed: false, 
+                xp: 60,
+                progress: Math.round(this.userData.accuracyRate),
+                target: 90
+            },
+            { 
+                text: "Study for 30 minutes", 
+                completed: false, 
+                xp: 40,
+                progress: Math.floor(this.userData.totalStudyTime / 60),
+                target: 30
+            }
+        ];
+    }
+
+    displayDailyGoals() {
+        const goalsList = document.getElementById('daily-goals-list');
+        if (!goalsList) return;
+
+        if (!this.userData.dailyGoals.length) {
+            this.generateDailyGoals();
+        }
+
+        goalsList.innerHTML = '';
+        
+        this.userData.dailyGoals.forEach((goal, index) => {
+            const goalItem = document.createElement('div');
+            goalItem.className = `goal-item ${goal.completed ? 'completed' : ''}`;
+            
+            goalItem.innerHTML = `
+                <div class="goal-checkbox ${goal.completed ? 'completed' : ''}" onclick="toggleGoal(${index})">
+                    ${goal.completed ? '✓' : ''}
+                </div>
+                <div class="goal-text">${goal.text}</div>
+                <div class="goal-xp">+${goal.xp} XP</div>
+            `;
+            
+            goalsList.appendChild(goalItem);
+        });
+
+        // Make toggleGoal globally available
+        window.toggleGoal = (index) => {
+            const goal = this.userData.dailyGoals[index];
+            if (!goal.completed && goal.progress >= goal.target) {
+                goal.completed = true;
+                this.awardXP(goal.xp, `Daily goal completed: ${goal.text}`);
+                this.displayDailyGoals();
+                this.checkBadges();
+            }
+        };
+    }
+
+    startSubject(subject, type) {
+        console.log('Starting subject:', subject, type);
+        this.currentSubject = subject;
+        
+        if (type === 'questions') {
+            this.startQuestions(subject);
+        } else {
+            // For labs, switch to labs content
+            this.switchContentType('labs');
+        }
+    }
+
+    startQuestions(subject) {
+        const grade = this.userData.grade;
+        const questions = this.questionsData[grade]?.[subject];
+        
+        if (!questions || questions.length === 0) {
+            this.showToast('No questions available for your grade level');
+            return;
+        }
+
+        this.currentQuestion = questions[0];
+        this.questionIndex = 0;
+        this.currentQuestion.startTime = Date.now();
+        
+        this.showQuestionScreen();
+        this.displayQuestion();
+    }
+
+    showQuestionScreen() {
+        this.showScreen('question-screen');
+        this.hideScreen('app-container');
+        
+        // Update question counter
+        const grade = this.userData.grade;
+        const questions = this.questionsData[grade]?.[this.currentSubject];
+        const counter = document.getElementById('question-counter');
+        if (counter && questions) {
+            counter.textContent = `${this.questionIndex + 1}/${questions.length}`;
+        }
+    }
+
+    displayQuestion() {
+        const question = this.currentQuestion;
+        if (!question) return;
+
+        const questionText = document.getElementById('question-text');
+        const answerSection = document.getElementById('answer-section');
+        const questionXP = document.getElementById('question-xp-value');
+
+        if (questionText) questionText.textContent = question.question;
+        if (questionXP) questionXP.textContent = question.xp;
+
+        if (answerSection) {
+            if (question.type === 'input') {
+                answerSection.innerHTML = `
+                    <input type="text" class="answer-input" id="answer-input" placeholder="Enter your answer">
+                    <button class="submit-btn-mobile" onclick="submitAnswer()">Submit Answer</button>
+                `;
+                
+                const input = document.getElementById('answer-input');
+                if (input) {
+                    input.focus();
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            this.submitAnswer();
+                        }
+                    });
+                }
+            } else if (question.type === 'multiple_choice') {
+                const optionsHTML = question.options.map((option, index) => `
+                    <div class="answer-option" data-answer="${option}" onclick="selectOption('${option}', this)">
+                        ${option}
+                    </div>
+                `).join('');
+                
+                answerSection.innerHTML = `
+                    <div class="answer-options">${optionsHTML}</div>
+                    <button class="submit-btn-mobile" id="submit-btn" disabled onclick="submitAnswer()">Submit Answer</button>
+                `;
+            }
+        }
+
+        // Make functions globally available
+        window.submitAnswer = () => this.submitAnswer();
+        window.selectOption = (option, element) => this.selectOption(option, element);
+    }
+
+    selectOption(option, element) {
+        // Remove previous selections
+        const options = document.querySelectorAll('.answer-option');
+        options.forEach(opt => opt.classList.remove('selected'));
+        
+        // Select current option
+        element.classList.add('selected');
+        this.currentQuestion.selectedAnswer = option;
+        
+        // Enable submit button
+        const submitBtn = document.getElementById('submit-btn');
+        if (submitBtn) submitBtn.disabled = false;
+        
+        this.addTouchFeedback(element);
+    }
+
+    submitAnswer() {
+        const question = this.currentQuestion;
+        if (!question) return;
+
+        let userAnswer;
+        
+        if (question.type === 'input') {
+            const input = document.getElementById('answer-input');
+            userAnswer = input ? input.value.trim() : '';
+        } else if (question.type === 'multiple_choice') {
+            userAnswer = question.selectedAnswer;
+        }
+
+        if (!userAnswer) {
+            this.showToast('Please provide an answer');
+            return;
+        }
+
+        const timeSpent = (Date.now() - question.startTime) / 1000;
+        const isCorrect = this.checkAnswer(userAnswer, question.answer);
+        
+        this.showQuestionFeedback(isCorrect, timeSpent);
+        
+        if (isCorrect) {
+            this.handleCorrectAnswer(timeSpent);
+        } else {
+            this.handleIncorrectAnswer();
+        }
+    }
+
+    checkAnswer(userAnswer, correctAnswer) {
+        return userAnswer.toLowerCase().trim() === correctAnswer.toLowerCase().trim();
+    }
+
+    showQuestionFeedback(isCorrect, timeSpent) {
+        const feedback = document.getElementById('question-feedback');
+        if (!feedback) return;
+
+        const question = this.currentQuestion;
+        let feedbackHTML = '';
+        
+        if (isCorrect) {
+            feedbackHTML = `
+                <div class="feedback-title" style="color: var(--color-success);">✅ Correct!</div>
+                <div class="feedback-message">
+                    ${question.explanation || 'Well done!'}
+                    <br><small>Answered in ${timeSpent.toFixed(1)} seconds</small>
+                </div>
+                <button class="btn btn--primary btn--full-width" onclick="nextQuestion()">Next Question</button>
+            `;
+        } else {
+            feedbackHTML = `
+                <div class="feedback-title" style="color: var(--color-error);">❌ Incorrect</div>
+                <div class="feedback-message">
+                    The correct answer is: <strong>${question.answer}</strong><br>
+                    ${question.explanation || ''}
+                </div>
+                <button class="btn btn--primary btn--full-width" onclick="nextQuestion()">Next Question</button>
+            `;
+        }
+        
+        feedback.innerHTML = feedbackHTML;
+        feedback.className = `question-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+        feedback.style.display = 'block';
+
+        // Make nextQuestion globally available
+        window.nextQuestion = () => this.nextQuestion();
+    }
+
+    handleCorrectAnswer(timeSpent) {
+        const question = this.currentQuestion;
+        let xp = question.xp;
+        
+        // Speed bonus
+        if (timeSpent < 10) {
+            xp *= 1.5;
+            this.checkSpeedBadge();
+        }
+        
+        this.awardXP(Math.round(xp), `Correct answer! +${Math.round(xp)} XP`);
+        this.userData.problemsSolved++;
+        
+        // Update subject progress
+        this.updateSubjectProgress(this.currentSubject, true);
+        
+        // Update daily goals
+        this.updateDailyGoalProgress('questions');
+        
+        this.checkBadges();
+    }
+
+    handleIncorrectAnswer() {
+        this.updateSubjectProgress(this.currentSubject, false);
+    }
+
+    updateSubjectProgress(subject, correct) {
+        const subjectKey = subject.toLowerCase();
+        const subjectData = this.userData.subjects[subjectKey === 'math' ? 'mathematics' : subjectKey];
+        
+        if (subjectData) {
+            if (correct) {
+                subjectData.completed++;
+            }
+            subjectData.progress = Math.min(100, (subjectData.completed / subjectData.total) * 100);
+        }
+        
+        this.saveUserData();
+    }
+
+    updateDailyGoalProgress(type) {
+        if (type === 'questions') {
+            const questionsGoal = this.userData.dailyGoals.find(g => g.text.includes('practice questions'));
+            if (questionsGoal && !questionsGoal.completed) {
+                questionsGoal.progress++;
+                if (questionsGoal.progress >= questionsGoal.target) {
+                    questionsGoal.completed = true;
+                    this.awardXP(questionsGoal.xp, 'Daily goal completed!');
+                }
+            }
+        } else if (type === 'lab') {
+            const labGoal = this.userData.dailyGoals.find(g => g.text.includes('lab simulation'));
+            if (labGoal && !labGoal.completed) {
+                labGoal.progress++;
+                if (labGoal.progress >= labGoal.target) {
+                    labGoal.completed = true;
+                    this.awardXP(labGoal.xp, 'Daily goal completed!');
+                }
+            }
+        }
+        
+        this.displayDailyGoals();
+    }
+
+    nextQuestion() {
+        const grade = this.userData.grade;
+        const questions = this.questionsData[grade]?.[this.currentSubject];
+        
+        if (!questions) {
+            this.goBackToSubjects();
+            return;
+        }
+        
+        this.questionIndex++;
+        
+        if (this.questionIndex >= questions.length) {
+            // End of questions
+            this.showModal('🎉 Subject Complete!', `Great job! You've completed all ${this.currentSubject} questions.`, 100);
+            setTimeout(() => {
+                this.goBackToSubjects();
+            }, 3000);
+        } else {
+            // Next question
+            this.currentQuestion = questions[this.questionIndex];
+            this.currentQuestion.startTime = Date.now();
+            this.displayQuestion();
+            
+            // Hide feedback
+            const feedback = document.getElementById('question-feedback');
+            if (feedback) feedback.style.display = 'none';
+            
+            // Update counter
+            const counter = document.getElementById('question-counter');
+            if (counter) {
+                counter.textContent = `${this.questionIndex + 1}/${questions.length}`;
+            }
+        }
+    }
+
+    goBackToSubjects() {
+        this.hideScreen('question-screen');
+        this.showScreen('app-container');
+        this.switchTab('subjects');
+    }
+
+    goBackToLabs() {
+        this.hideScreen('lab-screen');
+        this.showScreen('app-container');
+        this.switchTab('subjects');
+        this.switchContentType('labs');
+    }
+
+    startLab(labKey) {
+        console.log('Starting lab:', labKey);
+        const lab = this.labsData[labKey];
+        
+        if (!lab) {
+            this.showToast('Lab not found');
+            return;
+        }
+
+        this.currentLab = lab;
+        this.currentLab.key = labKey;
+        
+        this.showLabScreen();
+        this.setupLabSimulation();
+    }
+
+    showLabScreen() {
+        this.showScreen('lab-screen');
+        this.hideScreen('app-container');
+        
+        const labTitle = document.getElementById('lab-title');
+        if (labTitle && this.currentLab) {
+            labTitle.textContent = this.currentLab.name;
+        }
+    }
+
+    setupLabSimulation() {
+        const simulationArea = document.getElementById('simulation-area');
+        const controlsPanel = document.getElementById('controls-panel');
+        
+        if (!this.currentLab) return;
+        
+        // Basic simulation setup based on lab type
+        if (this.currentLab.key === 'pendulum') {
+            this.setupPendulumLab(simulationArea, controlsPanel);
+        } else if (this.currentLab.key === 'circuit') {
+            this.setupCircuitLab(simulationArea, controlsPanel);
+        } else {
+            this.setupGenericLab(simulationArea, controlsPanel);
+        }
+    }
+
+    setupPendulumLab(simulationArea, controlsPanel) {
+        if (simulationArea) {
+            simulationArea.innerHTML = `
+                <div style="text-align: center;">
+                    <svg width="300" height="250" viewBox="0 0 300 250">
+                        <line x1="50" y1="30" x2="250" y2="30" stroke="var(--color-text)" stroke-width="3"/>
+                        <line id="pendulum-string" x1="150" y1="30" x2="150" y2="130" stroke="var(--color-text)" stroke-width="2"/>
+                        <circle id="pendulum-bob" cx="150" cy="130" r="12" fill="var(--color-primary)"/>
+                        <text x="150" y="200" text-anchor="middle" fill="var(--color-text)" font-size="14">Simple Pendulum</text>
+                    </svg>
+                </div>
+            `;
+        }
+        
+        if (controlsPanel) {
+            controlsPanel.innerHTML = `
+                <h4>Controls</h4>
+                <div class="control-group">
+                    <label>Length: <span id="length-value" class="control-value">50</span> cm</label>
+                    <input type="range" id="length-slider" min="20" max="80" value="50" step="5">
+                </div>
+                <div class="control-group">
+                    <label>Time Period: <span id="period-value" class="control-value">1.4</span> s</label>
+                </div>
+                <button class="btn btn--primary btn--full-width" onclick="runPendulumExperiment()">Run Experiment</button>
+                <button class="btn btn--secondary btn--full-width mt-16" onclick="startLabAssessment()">Take Assessment</button>
+            `;
+            
+            const lengthSlider = document.getElementById('length-slider');
+            if (lengthSlider) {
+                lengthSlider.addEventListener('input', (e) => {
+                    const length = e.target.value;
+                    const period = 2 * Math.PI * Math.sqrt(length / 100 / 9.81);
+                    
+                    const lengthValue = document.getElementById('length-value');
+                    const periodValue = document.getElementById('period-value');
+                    
+                    if (lengthValue) lengthValue.textContent = length;
+                    if (periodValue) periodValue.textContent = period.toFixed(2);
+                    
+                    // Update visual
+                    const string = document.getElementById('pendulum-string');
+                    const bob = document.getElementById('pendulum-bob');
+                    if (string && bob) {
+                        const newY = 80 + (length * 2);
+                        string.setAttribute('y2', newY);
+                        bob.setAttribute('cy', newY);
+                    }
+                });
+            }
+        }
+
+        window.runPendulumExperiment = () => {
+            this.showToast('Pendulum is oscillating! Observe the motion.');
+            setTimeout(() => {
+                this.awardXP(50, 'Experiment completed!');
+            }, 2000);
+        };
+        
+        window.startLabAssessment = () => this.startLabAssessment();
+    }
+
+    setupCircuitLab(simulationArea, controlsPanel) {
+        if (simulationArea) {
+            simulationArea.innerHTML = `
+                <div style="text-align: center;">
+                    <svg width="300" height="200" viewBox="0 0 300 200">
+                        <rect x="50" y="90" width="30" height="20" fill="none" stroke="var(--color-text)" stroke-width="2"/>
+                        <text x="65" y="105" text-anchor="middle" fill="var(--color-text)" font-size="12">V</text>
+                        <rect x="150" y="90" width="40" height="20" fill="none" stroke="var(--color-text)" stroke-width="2"/>
+                        <text x="170" y="105" text-anchor="middle" fill="var(--color-text)" font-size="12">R</text>
+                        <line x1="80" y1="100" x2="150" y2="100" stroke="var(--color-text)" stroke-width="2"/>
+                        <line x1="190" y1="100" x2="250" y2="100" stroke="var(--color-text)" stroke-width="2"/>
+                        <line x1="250" y1="100" x2="250" y2="140" stroke="var(--color-text)" stroke-width="2"/>
+                        <line x1="250" y1="140" x2="50" y2="140" stroke="var(--color-text)" stroke-width="2"/>
+                        <line x1="50" y1="140" x2="50" y2="110" stroke="var(--color-text)" stroke-width="2"/>
+                        <text x="150" y="180" text-anchor="middle" fill="var(--color-text)" font-size="14">Ohm's Law Circuit</text>
+                    </svg>
+                </div>
+            `;
+        }
+        
+        if (controlsPanel) {
+            controlsPanel.innerHTML = `
+                <h4>Controls</h4>
+                <div class="control-group">
+                    <label>Voltage: <span id="voltage-value" class="control-value">6</span> V</label>
+                    <input type="range" id="voltage-slider" min="1" max="12" value="6" step="1">
+                </div>
+                <div class="control-group">
+                    <label>Resistance: <span id="resistance-value" class="control-value">10</span> Ω</label>
+                    <input type="range" id="resistance-slider" min="1" max="50" value="10" step="1">
+                </div>
+                <div class="control-group">
+                    <label>Current: <span id="current-value" class="control-value">0.6</span> A</label>
+                </div>
+                <button class="btn btn--primary btn--full-width" onclick="measureCurrent()">Measure Current</button>
+                <button class="btn btn--secondary btn--full-width mt-16" onclick="startLabAssessment()">Take Assessment</button>
+            `;
+            
+            const voltageSlider = document.getElementById('voltage-slider');
+            const resistanceSlider = document.getElementById('resistance-slider');
+            
+            const updateCurrent = () => {
+                const voltage = parseFloat(voltageSlider?.value || 6);
+                const resistance = parseFloat(resistanceSlider?.value || 10);
+                const current = voltage / resistance;
+                
+                const voltageValue = document.getElementById('voltage-value');
+                const resistanceValue = document.getElementById('resistance-value');
+                const currentValue = document.getElementById('current-value');
+                
+                if (voltageValue) voltageValue.textContent = voltage;
+                if (resistanceValue) resistanceValue.textContent = resistance;
+                if (currentValue) currentValue.textContent = current.toFixed(2);
+            };
+            
+            if (voltageSlider) {
+                voltageSlider.addEventListener('input', updateCurrent);
+            }
+            if (resistanceSlider) {
+                resistanceSlider.addEventListener('input', updateCurrent);
+            }
+        }
+
+        window.measureCurrent = () => {
+            this.showToast('Current measured successfully!');
+            this.awardXP(50, 'Circuit analysis completed!');
+        };
+    }
+
+    setupGenericLab(simulationArea, controlsPanel) {
+        if (simulationArea) {
+            simulationArea.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 60px; margin-bottom: 20px;">${this.currentLab.icon}</div>
+                    <h3>${this.currentLab.name}</h3>
+                    <p>${this.currentLab.description}</p>
+                    <div style="margin-top: 30px;">
+                        <div class="btn btn--secondary">🔬 Interactive Simulation</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        if (controlsPanel) {
+            controlsPanel.innerHTML = `
+                <h4>Lab Controls</h4>
+                <p>This is a ${this.currentLab.subject} simulation.</p>
+                <button class="btn btn--primary btn--full-width" onclick="runGenericExperiment()">Run Simulation</button>
+                <button class="btn btn--secondary btn--full-width mt-16" onclick="startLabAssessment()">Take Assessment</button>
+            `;
+        }
+
+        window.runGenericExperiment = () => {
+            this.showToast('Simulation completed successfully!');
+            this.awardXP(75, 'Lab simulation completed!');
+        };
+    }
+
+    startLabAssessment() {
+        if (!this.currentLab || !this.currentLab.assessmentQuestions) {
+            this.showToast('No assessment available for this lab');
+            return;
+        }
+
+        const assessment = document.getElementById('lab-assessment');
+        const questionContent = document.getElementById('lab-question-content');
+        
+        if (!assessment || !questionContent) return;
+
+        const question = this.currentLab.assessmentQuestions[0]; // Use first question
+        
+        questionContent.innerHTML = `
+            <div class="question-text">${question.question}</div>
+            <div class="answer-section">
+                ${question.type === 'multiple_choice' ? 
+                    question.options.map(option => `
+                        <div class="answer-option" data-answer="${option}" onclick="selectLabAnswer('${option}', this)">
+                            ${option}
+                        </div>
+                    `).join('') :
+                    `<input type="text" class="answer-input" id="lab-answer-input" placeholder="Enter your answer">`
+                }
+            </div>
+            <button class="btn btn--primary btn--full-width mt-16" onclick="submitLabAnswer('${question.answer}', ${question.xp})">Submit Answer</button>
+        `;
+        
+        assessment.style.display = 'block';
+
+        // Global functions
+        window.selectLabAnswer = (answer, element) => {
+            document.querySelectorAll('.answer-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            this.currentLabAnswer = answer;
+            this.addTouchFeedback(element);
+        };
+        
+        window.submitLabAnswer = (correctAnswer, xp) => {
+            let userAnswer = this.currentLabAnswer;
+            if (!userAnswer) {
+                const input = document.getElementById('lab-answer-input');
+                userAnswer = input ? input.value.trim() : '';
+            }
+            
+            if (!userAnswer) {
+                this.showToast('Please provide an answer');
+                return;
+            }
+            
+            const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
+            
+            if (isCorrect) {
+                this.awardXP(xp, 'Lab assessment completed!');
+                this.updateDailyGoalProgress('lab');
+                this.showModal('🎉 Assessment Complete!', 'Great job on the lab assessment!', xp);
+                
+                setTimeout(() => {
+                    this.goBackToLabs();
+                }, 3000);
+            } else {
+                this.showToast(`Incorrect. The answer is: ${correctAnswer}`);
+            }
+        };
+    }
+
+    showHint() {
+        if (this.currentQuestion && this.currentQuestion.hint) {
+            this.showToast(`Hint: ${this.currentQuestion.hint}`);
+        } else {
+            this.showToast('No hint available for this question');
+        }
+    }
+
+    showSteps() {
+        if (this.currentQuestion && this.currentQuestion.explanation) {
+            this.showModal('Solution Steps', this.currentQuestion.explanation);
+        } else {
+            this.showToast('No solution steps available');
+        }
+    }
+
+    updateProgress() {
+        const progressLevel = document.getElementById('progress-level');
+        const levelTitleProgress = document.getElementById('level-title-progress');
+        const progressXpText = document.getElementById('progress-xp-text');
+        const accuracyStat = document.getElementById('accuracy-stat');
+        const timeStat = document.getElementById('time-stat');
+        const problemsStat = document.getElementById('problems-stat');
+
+        if (progressLevel) progressLevel.textContent = this.userData.level;
+        if (accuracyStat) accuracyStat.textContent = Math.round(this.userData.accuracyRate) + '%';
+        if (timeStat) timeStat.textContent = Math.floor(this.userData.totalStudyTime / 3600) + 'h';
+        if (problemsStat) problemsStat.textContent = this.userData.problemsSolved;
+
+        // Update level title
+        const currentLevel = this.levelThresholds.find(l => l.level <= this.userData.level) || this.levelThresholds[0];
+        if (levelTitleProgress) {
+            levelTitleProgress.textContent = currentLevel.title;
+        }
+
+        // Update circular progress
+        const nextLevel = this.levelThresholds.find(l => l.level > this.userData.level);
+        const nextLevelXP = nextLevel ? nextLevel.xp : this.userData.xp + 1000;
+        const currentLevelXP = currentLevel.xp;
+        const progress = ((this.userData.xp - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
+        
+        const progressCircle = document.getElementById('progress-circle');
+        if (progressCircle) {
+            const circumference = 2 * Math.PI * 36; // radius = 36
+            const offset = circumference - (progress / 100 * circumference);
+            progressCircle.style.strokeDashoffset = offset;
+        }
+        
+        if (progressXpText) {
+            progressXpText.textContent = `${this.userData.xp}/${nextLevelXP}`;
+        }
+
+        // Create progress chart
+        this.createProgressChart();
+    }
+
+    createProgressChart() {
+        const ctx = document.getElementById('progress-chart');
+        if (!ctx) return;
+
+        const chartData = {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'XP Earned',
+                data: [120, 200, 150, 180, 300, 250, 180],
+                borderColor: '#1FB8CD',
+                backgroundColor: 'rgba(31, 184, 205, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        };
+
+        new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    loadAchievements() {
+        const badgesGrid = document.getElementById('mobile-badges-grid');
+        const earnedBadges = document.getElementById('earned-badges');
+        const totalBadges = document.getElementById('total-badges');
+        
+        if (earnedBadges) earnedBadges.textContent = this.userData.badges.length;
+        if (totalBadges) totalBadges.textContent = this.badges.length;
+        
+        if (!badgesGrid) return;
+        
+        badgesGrid.innerHTML = '';
+        
+        this.badges.forEach(badge => {
+            const badgeEl = document.createElement('div');
+            badgeEl.className = `badge-mobile ${badge.earned ? 'earned' : ''}`;
+            
+            badgeEl.innerHTML = `
+                <div class="badge-icon-mobile">${badge.icon}</div>
+                <div class="badge-name-mobile">${badge.name}</div>
+                <div class="badge-desc-mobile">${badge.description}</div>
+                <div class="badge-xp-mobile">+${badge.xp} XP</div>
+            `;
+            
+            badgesGrid.appendChild(badgeEl);
+        });
+    }
+
+    updateProfile() {
+        const profileName = document.getElementById('profile-name');
+        const profileGrade = document.getElementById('profile-grade');
+        const profileLevelDisplay = document.getElementById('profile-level-display');
+        const profileXP = document.getElementById('profile-xp');
+        const profileBadgesCount = document.getElementById('profile-badges-count');
+        const avatarInitial = document.getElementById('avatar-initial');
+        
+        if (profileName) profileName.textContent = this.userData.name;
+        if (profileGrade) profileGrade.textContent = this.userData.grade;
+        if (profileLevelDisplay) profileLevelDisplay.textContent = this.userData.level;
+        if (profileXP) profileXP.textContent = this.userData.xp;
+        if (profileBadgesCount) profileBadgesCount.textContent = this.userData.badges.length;
+        if (avatarInitial) avatarInitial.textContent = this.userData.name.charAt(0).toUpperCase();
+    }
+
+    awardXP(amount, message = '') {
+        this.userData.xp += amount;
+        this.userData.totalStudyTime += 60; // Add study time
+        
+        const newLevel = this.calculateLevel(this.userData.xp);
+        const leveledUp = newLevel > this.userData.level;
+        
+        if (leveledUp) {
+            this.userData.level = newLevel;
+            message += ` 🎉 Level Up! You're now Level ${newLevel}!`;
+        }
+        
+        this.showModal('🎉 Great Work!', message, amount);
+        this.saveUserData();
+        this.updateDashboard();
+    }
+
+    calculateLevel(xp) {
+        for (let i = this.levelThresholds.length - 1; i >= 0; i--) {
+            if (xp >= this.levelThresholds[i].xp) {
+                return this.levelThresholds[i].level;
+            }
+        }
+        return 1;
+    }
+
+    checkBadges() {
+        this.badges.forEach(badge => {
+            if (!badge.earned && this.checkBadgeCondition(badge.condition)) {
+                this.earnBadge(badge);
+            }
+        });
+    }
+
+    checkBadgeCondition(condition) {
+        switch (condition) {
+            case 'solve_1_problem':
+                return this.userData.problemsSolved >= 1;
+            case 'solve_10_problems':
+                return this.userData.problemsSolved >= 10;
+            case 'complete_1_lab':
+                return this.userData.completedLabs.length >= 1;
+            case 'fast_answer':
+                return false; // Implement in submitAnswer
+            case 'perfect_streak':
+                return false; // Implement streak tracking
+            case 'daily_goals':
+                return this.userData.dailyGoals.every(goal => goal.completed);
+            case 'all_subjects':
+                return Object.values(this.userData.subjects).every(subject => subject.completed > 0);
+            case 'reach_level_5':
+                return this.userData.level >= 5;
+            default:
+                return false;
+        }
+    }
+
+    checkSpeedBadge() {
+        const speedBadge = this.badges.find(b => b.condition === 'fast_answer');
+        if (speedBadge && !speedBadge.earned) {
+            this.earnBadge(speedBadge);
+        }
+    }
+
+    earnBadge(badge) {
+        badge.earned = true;
+        this.userData.badges.push(badge.name);
+        
+        // Show achievements badge notification
+        const achievementsBadge = document.getElementById('achievements-badge');
+        if (achievementsBadge) {
+            achievementsBadge.style.display = 'block';
+        }
+        
+        this.awardXP(badge.xp, `🏆 Badge Earned: ${badge.name}!`);
+    }
+
+    highlightSubject(subject) {
+        // Visual highlight effect when navigating to subject from home
+        setTimeout(() => {
+            const subjectCards = document.querySelectorAll('.subject-card-full');
+            subjectCards.forEach(card => {
+                if (card.dataset.subject === subject) {
+                    card.style.animation = 'highlight 1s ease-out';
+                }
+            });
+        }, 300);
+    }
+
+    showHelp() {
+        this.showModal('Help & Support', 'Welcome to STEM Siksha! Use the bottom navigation to explore subjects, track your progress, and earn achievements. Swipe through questions and tap to interact with labs.');
+    }
+
+    resetProgress() {
+        if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+            this.userData = {
+                name: this.userData.name,
+                grade: this.userData.grade,
+                language: this.userData.language,
+                xp: 0,
+                level: 1,
+                badges: [],
+                streak: 0,
+                totalStudyTime: 0,
+                problemsSolved: 0,
+                accuracyRate: 85,
+                subjects: {
+                    mathematics: { completed: 0, total: 10, progress: 0 },
+                    physics: { completed: 0, total: 10, progress: 0 },
+                    chemistry: { completed: 0, total: 10, progress: 0 },
+                    biology: { completed: 0, total: 10, progress: 0 }
+                },
+                completedQuestions: [],
+                completedLabs: [],
+                dailyGoals: [],
+                lastLoginDate: null
+            };
+            
+            // Reset badges
+            this.badges.forEach(badge => badge.earned = false);
+            
+            this.saveUserData();
+            this.generateDailyGoals();
+            this.updateDashboard();
+            this.updateProfile();
+            this.loadAchievements();
+            this.showToast('Progress has been reset!');
+        }
+    }
+
+    showModal(title, message, xpGain = 0) {
+        const modal = document.getElementById('success-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalXpGain = document.getElementById('modal-xp-gain');
+        const modalXpAmount = document.getElementById('modal-xp-amount');
+        
+        if (modalTitle) modalTitle.textContent = title;
+        if (modalMessage) modalMessage.textContent = message;
+        
+        if (xpGain > 0 && modalXpGain && modalXpAmount) {
+            modalXpGain.style.display = 'block';
+            modalXpAmount.textContent = xpGain;
+        } else if (modalXpGain) {
+            modalXpGain.style.display = 'none';
+        }
+        
+        if (modal) modal.classList.remove('hidden');
+    }
+
+    closeModal() {
+        const modal = document.getElementById('success-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    showScreen(screenId) {
+        const screen = document.getElementById(screenId);
+        if (screen) {
+            screen.classList.add('active');
+            screen.classList.remove('hidden');
+        }
+    }
+
+    hideScreen(screenId) {
+        const screen = document.getElementById(screenId);
+        if (screen) {
+            screen.classList.remove('active');
+            screen.classList.add('hidden');
+        }
+    }
+
+    saveUserData() {
+        try {
+            localStorage.setItem('stemSikshaMobileUser', JSON.stringify(this.userData));
+        } catch (error) {
+            console.error('Error saving user data:', error);
+        }
+    }
+
+    loadUserData() {
+        try {
+            const savedData = localStorage.getItem('stemSikshaMobileUser');
+            if (savedData) {
+                const parsed = JSON.parse(savedData);
+                this.userData = { ...this.userData, ...parsed };
+                
+                // Update badges earned status
+                if (this.userData.badges) {
+                    this.badges.forEach(badge => {
+                        if (this.userData.badges.includes(badge.name)) {
+                            badge.earned = true;
+                        }
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error loading user data:', error);
+        }
+    }
+}
+
+// Initialize the app when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing STEM Mobile App...');
+    window.stemMobileApp = new STEMMobileApp();
+});
+
+// Add CSS animation for highlight effect
+const style = document.createElement('style');
+style.textContent = `
+@keyframes highlight {
+    0% { background: var(--color-surface); }
+    50% { background: var(--color-bg-1); transform: scale(1.02); }
+    100% { background: var(--color-surface); transform: scale(1); }
+}
+`;
+document.head.appendChild(style);
